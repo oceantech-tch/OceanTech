@@ -1,0 +1,27 @@
+name: Update Activity
+
+on:
+  schedule:
+    - cron: "0 * * * *"  # Runs every hour
+  workflow_dispatch:
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: JasonEtco/activity-box@v1
+        with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        MAX_EVENTS: "5"  # Show only 5 most recent activities
+
+      I - uses: Readme-Workflows/recent-activity@v2
+      
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Update activity log" || echo "No changes to commit"
+          git push
